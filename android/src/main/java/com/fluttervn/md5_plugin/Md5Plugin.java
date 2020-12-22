@@ -45,7 +45,7 @@ public class Md5Plugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     if("getMD5".equals(call.method)){
       String path= call.argument("file_path");
-      Log.d("MD5Plugin","getMD5 @filepath="+path);
+//      Log.d("MD5Plugin","getMD5 @filepath="+path);
       result.success(getFileChecksum(path));
     } else {
       result.notImplemented();
@@ -73,10 +73,10 @@ public class Md5Plugin implements MethodCallHandler {
         md.update(buffer, 0, numRead);
       }
       byte[] digest = md.digest();
-      String checksum = new String(Base64.encode(digest, Base64.DEFAULT));
-      String result= checksum.trim();
-      Log.d("MD5Plugin","getStreamChecksum @result="+result);
-      return result;
+//      String checksum = new String(Base64.encode(digest, Base64.DEFAULT));
+//      String result= checksum.trim();
+      //      Log.d("MD5Plugin","getStreamChecksum @result="+result);
+      return byteToHex(digest).trim();
     } catch (NoSuchAlgorithmException e) {
     } catch (IOException e) {
     } finally {
@@ -87,5 +87,15 @@ public class Md5Plugin implements MethodCallHandler {
     }
 
     return null;
+  }
+
+  public static String byteToHex(byte[] bytes){
+    String strHex = "";
+    StringBuilder sb = new StringBuilder("");
+    for (byte aByte : bytes) {
+      strHex = Integer.toHexString(aByte & 0xFF);
+      sb.append((strHex.length() == 1) ? "0" + strHex : strHex); // 每个字节由两个字符表示，位数不够，高位补0
+    }
+    return sb.toString().trim();
   }
 }
